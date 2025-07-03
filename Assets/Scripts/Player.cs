@@ -17,6 +17,8 @@ public class Player : Character
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float gravityScale = 1;
     [SerializeField] private static float GlobalGravity = -9.81f;
+    [SerializeField] private float SprintMultiplier = 200;
+    [SerializeField] private float PlayerSpeed = 0;
 
 
     // Start is called before the first frame update
@@ -24,6 +26,12 @@ public class Player : Character
     {
         CustomInput = new TheRPGProject();
         rb.useGravity = false;
+        PlayerSpeed = MoveSpeed;
+    }
+
+    private void Start()
+    {
+        PlayerSpeed = MoveSpeed;
     }
 
     private void OnEnable()
@@ -32,6 +40,8 @@ public class Player : Character
         CustomInput.Player.Move.performed += MovePlayer;
         CustomInput.Player.Move.canceled += StopMoving;
         CustomInput.Player.Jump.performed += Jump;
+        CustomInput.Player.Sprint.performed += StartSprinting;
+        CustomInput.Player.Sprint.canceled += StopSprinting;
     }
 
     private void OnDisable()
@@ -39,6 +49,8 @@ public class Player : Character
         CustomInput.Player.Move.performed -= MovePlayer;
         CustomInput.Player.Move.canceled -= StopMoving;
         CustomInput.Player.Jump.performed -= Jump;
+        CustomInput.Player.Sprint.performed -= StartSprinting;
+        CustomInput.Player.Sprint.canceled -= StopSprinting;
         CustomInput.Disable();
     }
 
@@ -47,7 +59,7 @@ public class Player : Character
         moving = true;
         Vector2 input =  context.ReadValue<Vector2>();
 
-        movementAmount = new Vector3(input.x, 0, input.y).normalized * MoveSpeed;
+        movementAmount = new Vector3(input.x, 0, input.y).normalized * PlayerSpeed;
     }
 
     void StopMoving(InputAction.CallbackContext context)
@@ -57,6 +69,18 @@ public class Player : Character
         {
             rb.velocity = Vector3.zero;
         }
+    }
+
+    void StartSprinting(InputAction.CallbackContext context)
+    {
+        PlayerSpeed = MoveSpeed * SprintMultiplier;
+        movementAmount = movementAmount.normalized * PlayerSpeed;
+    }
+
+    void StopSprinting(InputAction.CallbackContext context)
+    {
+        PlayerSpeed = MoveSpeed;
+        movementAmount = movementAmount.normalized * PlayerSpeed;
     }
 
     void Jump(InputAction.CallbackContext context)

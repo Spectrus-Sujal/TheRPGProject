@@ -609,6 +609,8 @@ MonoBehaviour:
   JumpPower: 30000
   groundCheck: {fileID: 1762337863}
   gravityScale: 10
+  SprintMultiplier: 2
+  PlayerSpeed: 0
 --- !u!54 &2006988647
 Rigidbody:
   m_ObjectHideFlags: 0
